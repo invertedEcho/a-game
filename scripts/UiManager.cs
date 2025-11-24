@@ -1,7 +1,6 @@
 using Godot;
 
-public partial class UiManager : Control
-{
+public partial class UiManager : Control {
     public static UiManager Instance;
 
     GameManager ObjectiveManager;
@@ -39,8 +38,8 @@ public partial class UiManager : Control
     [Export]
     public TextureRect InventorySlot8;
 
-    public override void _Ready()
-    {
+    public override void _Ready() {
         Instance = this;
+        CurrentObjectiveLabel.Text = GameManager.GetCurrentObjectiveDescription(GameManager.Instance.CurrentObjective);
     }
 }

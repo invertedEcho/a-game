@@ -1,36 +1,30 @@
 using Godot;
 
-public partial class GameManager : Node
-{
+public partial class GameManager : Node {
     public static GameManager Instance;
 
-    public enum GameObjective
-    {
+    public enum GameObjective {
         GrowFirstPlant,
         SellFirstPlant,
         BuyFirstPlot
     }
 
-    public GameObjective CurrentObjective { get; set; } = GameObjective.GrowFirstPlant;
+    public GameObjective CurrentObjective { get; private set; } = GameObjective.GrowFirstPlant;
 
-    public override void _Ready()
-    {
+    public override void _Ready() {
         Instance = this;
     }
 
-    public void UpdateObjective(GameObjective objective)
-    {
+    public void UpdateObjective(GameObjective objective) {
         CurrentObjective = objective;
         string newObjectiveText = GetCurrentObjectiveDescription(objective);
 
         UiManager.Instance.CurrentObjectiveLabel.Text = newObjectiveText;
     }
 
-    private static string GetCurrentObjectiveDescription(GameManager.GameObjective currentGameObjective)
-    {
+    public static string GetCurrentObjectiveDescription(GameManager.GameObjective currentGameObjective) {
         string currentObjectiveText = "Current Objective: ";
-        switch (currentGameObjective)
-        {
+        switch (currentGameObjective) {
             case GameObjective.GrowFirstPlant:
                 currentObjectiveText += "Grow your first cactus!";
                 break;

@@ -82,6 +82,7 @@ public partial class GrowPlot : Node3D {
                 string cactusModelPath = GetModelPathForCactusByPlantState(plantState);
                 PackedScene plantScene = GD.Load<PackedScene>(cactusModelPath);
                 Node3D plantModel = plantScene.Instantiate<Node3D>();
+                AddChild(plantModel);
 
                 string interactLabelText = "Press (F) to make this Young Plant an Aged Plant";
                 UiManager.Instance.InteractLabel.Text = interactLabelText;
@@ -93,6 +94,7 @@ public partial class GrowPlot : Node3D {
 
         // free the model so we can add new plant model
         if (plantModel != null) {
+            GD.Print("freeing plant model");
             this.plantModel.Free();
         }
 
@@ -103,6 +105,7 @@ public partial class GrowPlot : Node3D {
                     string plantModelPath = GetModelPathForCactusByPlantState(plantState);
                     PackedScene plantScene = (PackedScene)GD.Load(plantModelPath);
                     this.plantModel = plantScene.Instantiate<Node3D>();
+                    GD.Print("adding new plant model");
                     AddChild(this.plantModel);
 
                     UiManager.Instance.InteractLabel.Text = "Press (F) to make this plant ready to harvest";
@@ -114,6 +117,7 @@ public partial class GrowPlot : Node3D {
                     string plantModelPath = GetModelPathForCactusByPlantState(plantState);
                     PackedScene plantScene = (PackedScene)GD.Load(plantModelPath);
                     this.plantModel = plantScene.Instantiate<Node3D>();
+                    GD.Print("adding new plant model");
                     AddChild(plantModel);
 
                     UiManager.Instance.InteractLabel.Text = "Press (F) to harvest this plant";
@@ -132,6 +136,7 @@ public partial class GrowPlot : Node3D {
                     };
 
                     bool result = Player.Instance.AppendItemToInventory(gameItem);
+                    GameManager.Instance.UpdateObjective(GameManager.GameObjective.SellFirstPlant);
                     if (!result) {
                         GD.Print("couldnt add item to inventory, inventory already full. what to do now?");
                     }
