@@ -41,7 +41,7 @@ uv1_scale = Vector3(20, 20, 20)
 [node name="World" type="Node3D"]
 script = ExtResource("1_u44wh")
 
-[node name="Player" type="CharacterBody3D" parent="."]
+[node name="Player" type="CharacterBody3D" parent="." groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75213, 0)
 axis_lock_angular_z = true
 script = ExtResource("1_gagv8")

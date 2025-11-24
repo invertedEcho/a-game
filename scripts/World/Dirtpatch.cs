@@ -37,7 +37,8 @@ public partial class Dirtpatch : Node3D
 
     private void OnBodyEntered(Node3D body)
     {
-        GD.Print("player has entered dirtpatch range!");
+        if (!body.IsInGroup("player")) return;
+        GD.Print($"body has entered dirtpatch range! {body}");
         playerInRange = true;
         UiManager.Instance.InteractLabel.Visible = true;
         UiManager.Instance.InteractLabel.Text = GetTextForInteractLabel(dirtPatchState);
@@ -45,6 +46,7 @@ public partial class Dirtpatch : Node3D
 
     private void OnBodyExit(Node3D body)
     {
+        if (!body.IsInGroup("player")) return;
         GD.Print("player has exited dirtpatch range!");
         playerInRange = false;
         UiManager.Instance.InteractLabel.Visible = false;

@@ -20,6 +20,7 @@ public partial class Shop : Node3D
         {
             return;
         }
+        if (!body.IsInGroup("player")) return;
 
         UiManager.Instance.InteractLabel.Text = $"Press (F) to sell your Cactus for {GameConstants.CactusPrize} coins!";
         GD.Print("player has entered shop range!");
@@ -29,6 +30,8 @@ public partial class Shop : Node3D
 
     private void OnBodyExit(Node3D body)
     {
+        if (!body.IsInGroup("player")) return;
+
         GD.Print("player has exited shop range!");
         playerInRange = false;
         UiManager.Instance.InteractLabel.Visible = false;
