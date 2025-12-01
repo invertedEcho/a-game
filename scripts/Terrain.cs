@@ -1,10 +1,6 @@
 using System;
 using Godot;
 
-// this script mainly handles spawning trees at the edge of our map.
-// trees are spawned using MultiMeshInstance3D.
-// it does so by choosing points mathematically along a ring -> see method: RandomEdgePoint
-// then, 
 public partial class Terrain : Node3D {
     [Export]
     MeshInstance3D terrainMesh;
@@ -15,6 +11,10 @@ public partial class Terrain : Node3D {
     const int instanceCount = 350;
     const float Offset = 10f;
     const float HalfOfOffset = Offset / 2;
+    const float MinScaleValue = 0.5f;
+    const float MaxScalueValue = 1.5f;
+    const float MinRotationValue = 0.0f;
+    const float MaxRotationValue = Mathf.Pi * 2;
 
     public override void _Ready() {
         SpawnRandomTreesAtEdgesOfMap();
@@ -29,8 +29,8 @@ public partial class Terrain : Node3D {
         Aabb boundingBox = terrainMesh.GetAabb();
 
         // we decrease the size, because it shouldnt be at the very edge but a bit before
-        float boundingBoxSizeX = boundingBox.Size.X - 20f;
-        float boundingBoxSizeZ = boundingBox.Size.Z - 20f;
+        float boundingBoxSizeX = boundingBox.Size.X - 30f;
+        float boundingBoxSizeZ = boundingBox.Size.Z - 30f;
 
         float globalMinX = -(boundingBoxSizeX / 2f);
         float globalMaxX = (boundingBoxSizeX / 2f);
@@ -110,6 +110,20 @@ public partial class Terrain : Node3D {
                 treeMeshes.Multimesh.SetInstanceTransform(currentMeshInstanceIndex, transform);
             }
             currentMeshInstanceIndex++;
+        }
+
+        for (int i = 0; i < instanceCount; i++) {
+            float randomScaleValue = MathUtils.GetRandomFloatRange(randomInstance, MinScaleValue, MaxScalueValue);
+            float randomRotationValue = MathUtils.GetRandomFloatRange(randomInstance, MinRotationValue, MaxRotationValue);
+            GD.Print($"randomScaleValue: {randomScaleValue}");
+
+            Transform3D existingTransform = treeMeshes.Multimesh.GetInstanceTransform(i);
+
+            Basis newBasis = existingTransform.Basis;
+            newBasis = newBasis.Scaled(new Vector3(randomScaleValue, randomScaleValue, randomScaleValue));
+            newBasis = newBasis.Rotated(new Vector3(0f, 1f, 0f), randomRotationValue);
+            existingTransform.Basis = newBasis;
+            treeMeshes.Multimesh.SetInstanceTransform(i, existingTransform);
         }
     }
 
