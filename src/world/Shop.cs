@@ -157,7 +157,7 @@ public partial class Shop : Node3D {
             UpdateBuyAndSellButtonStates();
             _rootCanvasLayer.Visible = false;
         }
-        else if (Input.IsActionJustPressed("escape")) {
+        else if (Input.IsActionJustPressed("escape") && _shopMenu.Visible) {
             _shopMenu.Visible = false;
             Input.MouseMode = Input.MouseModeEnum.Captured;
             _rootCanvasLayer.Visible = true;
