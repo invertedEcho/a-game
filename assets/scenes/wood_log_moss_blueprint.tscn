@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://dnhnyx5vbjvvb"]
+
+[ext_resource type="PackedScene" uid="uid://cck4f7qhc5hs3" path="res://assets/models/nature/WoodLog_Moss.glb" id="1_q08j2"]
+[ext_resource type="Material" uid="uid://bg3fouq1ebb6i" path="res://assets/blueprint.tres" id="2_rdjyv"]
+
+[node name="WoodLog_Moss_Blueprint" instance=ExtResource("1_q08j2")]
+
+[node name="WoodLog_Moss" parent="." index="0"]
+surface_material_override/0 = ExtResource("2_rdjyv")
+surface_material_override/1 = ExtResource("2_rdjyv")
+surface_material_override/2 = ExtResource("2_rdjyv")
+surface_material_override/3 = ExtResource("2_rdjyv")
+surface_material_override/4 = ExtResource("2_rdjyv")

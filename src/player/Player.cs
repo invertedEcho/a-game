@@ -21,6 +21,8 @@ public partial class Player : CharacterBody3D {
 
     public int CurrentHotbarSlotSelected = 0;
 
+    private Node3D _growPlotBlueprint = null;
+
     public override void _Ready() {
         Instance = this;
         _playerCamera = (PlayerCamera)GetNode("PlayerCamera");
@@ -60,11 +62,47 @@ public partial class Player : CharacterBody3D {
         else if (Input.IsActionJustPressed("hotbar_8")) {
             UpdateCurrentHotbarSlotSelected(7);
         }
+
+        bool currentHotbarItemIsGrowPlot = _hotbar[CurrentHotbarSlotSelected] is BuildItem buildItem && buildItem.Type == BuildItemType.GrowPlot;
+        if (Input.IsActionJustPressed("build_mode") && currentHotbarItemIsGrowPlot && _growPlotBlueprint is null) {
+            var growPlotBlueprint = GD.Load<PackedScene>("res://assets/scenes/grow_plot_blueprint.tscn");
+            _growPlotBlueprint = growPlotBlueprint.Instantiate<Node3D>();
+            _growPlotBlueprint.Scale = new(0.5f, 0.5f, 0.5f);
+
+            GetTree().Root.AddChild(_growPlotBlueprint);
+
+            // instantiate GrowPlotBlueprint, move it when mouse moves with player position
+            // Vector3? positionSnapped = Terrain.Instance.SnapToGround(Position);
+            // if (positionSnapped is Vector3 position) {
+            //     World.World.Instance.PlaceGrowPlot(position);
+            //     RemoveItemFromHotbar(CurrentHotbarSlotSelected);
+            // }
+        }
+
+        if (_growPlotBlueprint is not null) {
+            Vector3 growPlotBluePrintPosition = Position;
+            growPlotBluePrintPosition.Z -= 2f;
+            _growPlotBlueprint.Position = growPlotBluePrintPosition;
+            _growPlotBlueprint.Rotation = _playerCamera.Rotation;
+        }
     }
 
     private void UpdateCurrentHotbarSlotSelected(int newHotbarSlotSelected) {
         CurrentHotbarSlotSelected = newHotbarSlotSelected;
         UiManager.Instance.UpdateSelectedHotbarSlot(newHotbarSlotSelected);
+        UpdateInteractLabel();
+    }
+
+    private void UpdateInteractLabel() {
+        bool currentHotbarItemIsGrowPlot = _hotbar[CurrentHotbarSlotSelected] is BuildItem buildItem && buildItem.Type == BuildItemType.GrowPlot;
+        if (currentHotbarItemIsGrowPlot) {
+            UiManager.Instance.InteractLabel.Visible = true;
+            UiManager.Instance.InteractLabel.Text = "Press (E) to enter Build Mode";
+        }
+        else {
+            UiManager.Instance.InteractLabel.Visible = false;
+            UiManager.Instance.InteractLabel.Text = "";
+        }
     }
 
     private void HandleMovementInput() {

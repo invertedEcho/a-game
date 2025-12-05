@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://dfw43dqmnalk7"]
+
+[ext_resource type="PackedScene" uid="uid://dnhnyx5vbjvvb" path="res://assets/scenes/wood_log_moss_blueprint.tscn" id="2_0rxik"]
+[ext_resource type="Material" uid="uid://bg3fouq1ebb6i" path="res://assets/blueprint.tres" id="4_m6d27"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_q3v31"]
+size = Vector3(3.2, 0.44, 3.2)
+
+[node name="GrowPlotBlueprint" type="Node3D"]
+
+[node name="WoodLog_Moss_Blueprint" parent="." instance=ExtResource("2_0rxik")]
+transform = Transform3D(-0.07323823, 0, 0.99731445, 0, 1, 0, -0.99731445, 0, -0.07323823, 0.026, 0.131, -1.435)
+
+[node name="WoodLog_Moss_Blueprint2" parent="." instance=ExtResource("2_0rxik")]
+transform = Transform3D(-0.106264, 0, -0.9943379, 0, 1, 0, 0.9943379, 0, -0.106264, -0.24, 0.141, 1.343)
+
+[node name="WoodLog_Moss_Blueprint3" parent="." instance=ExtResource("2_0rxik")]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, -1.632, 0.141, 0.19)
+
+[node name="WoodLog_Moss_Blueprint4" parent="." instance=ExtResource("2_0rxik")]
+transform = Transform3D(0.9999999, 0, 0, 0, 1, 0, 0, 0, 0.9999999, 1.419, 0.174, 0.095)
+
+[node name="PlantModel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10425854, 0.28514016, 0)
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_q3v31")
+surface_material_override/0 = ExtResource("4_m6d27")

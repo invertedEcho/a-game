@@ -4,12 +4,6 @@ using Godot;
 namespace agame.World;
 
 public partial class GrowPlot : Node3D {
-    [Signal]
-    public delegate void PlayerInRangeEventHandler(bool inRange);
-
-    [Signal]
-    public delegate void PlantFullyGrownEventHandler();
-
     enum GrowPlotState {
         Dry,
         Watered,
