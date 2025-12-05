@@ -11,21 +11,21 @@ public partial class Player : CharacterBody3D {
     private int _speed = 15;
     private float _jumpVelocity = 10.0f;
 
-    public static Player Instance;
+    public static Player Instance { get; private set; }
 
     public float CoinCount { get; private set; } = 0f;
 
-    public const int InventorySize = 8;
-    // maybe have a better data structure, we want fixed size of InventorySize. for now we just ensure this at developer side that it wont be bigger than this
-    private Array<GameItem> _inventory = [];
+    public const int HotbarSize = 8;
+    // maybe have a better data structure, we want fixed size of HotbarSize. for now we just ensure this at developer side that it wont be bigger than this
+    private Array<GameItem> _hotbar = [];
 
-    public int CurrentInventorySlotSelected = 0;
+    public int CurrentHotbarSlotSelected = 0;
 
     public override void _Ready() {
         Instance = this;
         _playerCamera = (PlayerCamera)GetNode("PlayerCamera");
-        for (int i = 0; i < InventorySize; i++) {
-            _inventory.Add(new GameItem { IsPlaceHolder = true });
+        for (int i = 0; i < HotbarSize; i++) {
+            _hotbar.Add(new GameItem { IsPlaceHolder = true });
         }
     }
 
@@ -37,34 +37,34 @@ public partial class Player : CharacterBody3D {
 
     public override void _Process(double delta) {
         if (Input.IsActionJustPressed("hotbar_1")) {
-            UpdateCurrentInventorySlotSelected(0);
+            UpdateCurrentHotbarSlotSelected(0);
         }
         else if (Input.IsActionJustPressed("hotbar_2")) {
-            UpdateCurrentInventorySlotSelected(1);
+            UpdateCurrentHotbarSlotSelected(1);
         }
         else if (Input.IsActionJustPressed("hotbar_3")) {
-            UpdateCurrentInventorySlotSelected(2);
+            UpdateCurrentHotbarSlotSelected(2);
         }
         else if (Input.IsActionJustPressed("hotbar_4")) {
-            UpdateCurrentInventorySlotSelected(3);
+            UpdateCurrentHotbarSlotSelected(3);
         }
         else if (Input.IsActionJustPressed("hotbar_5")) {
-            UpdateCurrentInventorySlotSelected(4);
+            UpdateCurrentHotbarSlotSelected(4);
         }
         else if (Input.IsActionJustPressed("hotbar_6")) {
-            UpdateCurrentInventorySlotSelected(5);
+            UpdateCurrentHotbarSlotSelected(5);
         }
         else if (Input.IsActionJustPressed("hotbar_7")) {
-            UpdateCurrentInventorySlotSelected(6);
+            UpdateCurrentHotbarSlotSelected(6);
         }
         else if (Input.IsActionJustPressed("hotbar_8")) {
-            UpdateCurrentInventorySlotSelected(7);
+            UpdateCurrentHotbarSlotSelected(7);
         }
     }
 
-    private void UpdateCurrentInventorySlotSelected(int newInventorySlotSelected) {
-        CurrentInventorySlotSelected = newInventorySlotSelected;
-        UiManager.Instance.UpdateSelectedInventorySlot(newInventorySlotSelected);
+    private void UpdateCurrentHotbarSlotSelected(int newHotbarSlotSelected) {
+        CurrentHotbarSlotSelected = newHotbarSlotSelected;
+        UiManager.Instance.UpdateSelectedHotbarSlot(newHotbarSlotSelected);
     }
 
     private void HandleMovementInput() {
@@ -111,56 +111,49 @@ public partial class Player : CharacterBody3D {
         UiManager.Instance.CoinsLabel.Text = CoinCount.ToString();
     }
 
-    // if there is already an item at the given index
-    /// Returns a boolean indicating whether adding the item was successful
-    private bool AddItemToInventory(GameItem itemToAdd, int index) {
-        if (index + 1 > InventorySize) {
-            GD.PrintErr($"The inventory has a size of {InventorySize} so the given index {index} is invalid");
-            return false;
+    /// <summary>
+    /// Attempts to place the given item into the currently selected hotbar slot.
+    /// If the selected slot is occupied, tries to place the item into the next
+    /// available empty slot from left to right.
+    /// </summary>
+    /// <param name="itemToAdd">The item to add to the hotbar.</param>
+    /// <returns>
+    /// True if the item is placed successfully; otherwise false.
+    /// </returns>
+    public bool TryPlaceItemInHotbar(GameItem itemToAdd) {
+        if (_hotbar[CurrentHotbarSlotSelected].IsPlaceHolder) {
+            _hotbar[CurrentHotbarSlotSelected] = itemToAdd;
+            UiManager.Instance.UpdateItemPreviewSlotTexture(CurrentHotbarSlotSelected, itemToAdd.PathToTexture);
+            return true;
         }
-
-        GameItem currentItem = _inventory[index];
-
-        if (!currentItem.IsPlaceHolder) {
-            GD.PrintErr($"The inventory already contains a GameItem at index {index}: {currentItem}");
-            return false;
-        }
-
-        _inventory[0] = itemToAdd;
-        return true;
-    }
-
-    /// Tries to find an empty slot in the inventory and add the given item. If unsuccessful, this method will return false, otherwise true.
-    public bool AppendItemToInventory(GameItem itemToAdd) {
-        for (int index = 0; index < _inventory.Count; index++) {
-            GameItem currentGameItem = _inventory[index];
+        for (int index = 0; index < _hotbar.Count; index++) {
+            GameItem currentGameItem = _hotbar[index];
 
             if (!currentGameItem.IsPlaceHolder) continue;
 
-            _inventory[index] = itemToAdd;
-            UiManager.Instance.InventorySlotTextures[index].Texture = GD.Load<Texture2D>(itemToAdd.PathToTexture);
+            _hotbar[index] = itemToAdd;
+            UiManager.Instance.UpdateItemPreviewSlotTexture(index, itemToAdd.PathToTexture);
             return true;
         }
         return false;
     }
 
     /// Returns a boolean indicating whether the removal of the item at the given index was succesful
-    public bool RemoveItemFromInventory(int index) {
-        if (index + 1 > InventorySize) {
-            GD.PrintErr($"The inventory has a size of {InventorySize} so the given index {index} is invalid");
+    public bool RemoveItemFromHotbar(int index) {
+        if (index + 1 > HotbarSize) {
+            GD.PrintErr($"The inventory has a size of {HotbarSize} so the given index {index} is invalid");
             return false;
         }
 
-        _inventory[index] = new GameItem { IsPlaceHolder = true };
-        GD.Print($"setting texture of inventory slot {index} to null");
-        UiManager.Instance.InventorySlotTextures[index].Texture = null;
+        _hotbar[index] = new GameItem { IsPlaceHolder = true };
+        UiManager.Instance.UpdateItemPreviewSlotTexture(index, null);
         return true;
     }
 
     /// Returns the game item and index for the given GameItemType
     public (PlantItem, int)? GetPlantItemByType(PlantType plantType) {
-        for (int index = 0; index < InventorySize; index++) {
-            GameItem currentItem = _inventory[index];
+        for (int index = 0; index < HotbarSize; index++) {
+            GameItem currentItem = _hotbar[index];
             if (currentItem is PlantItem plantItem && plantItem.Type == plantType) {
                 return (plantItem, index);
             }
@@ -170,8 +163,8 @@ public partial class Player : CharacterBody3D {
 
     public int GetPlayerOwnCountForPlantItemByType(PlantType plantType) {
         int count = 0;
-        for (int index = 0; index < InventorySize; index++) {
-            GameItem currentItem = _inventory[index];
+        for (int index = 0; index < HotbarSize; index++) {
+            GameItem currentItem = _hotbar[index];
             if (currentItem is PlantItem plantItem && plantItem.Type == plantType) {
                 count++;
             }
@@ -181,8 +174,8 @@ public partial class Player : CharacterBody3D {
 
     public int GetPlayerOwnCountnForBuildItemByType(BuildItemType buildItemType) {
         int count = 0;
-        for (int index = 0; index < InventorySize; index++) {
-            GameItem currentItem = _inventory[index];
+        for (int index = 0; index < HotbarSize; index++) {
+            GameItem currentItem = _hotbar[index];
             if (currentItem is BuildItem buildItem && buildItem.Type == buildItemType) {
                 count++;
             }

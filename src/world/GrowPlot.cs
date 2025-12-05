@@ -123,7 +123,7 @@ public partial class GrowPlot : Node3D {
                     growPlotState = GrowPlotState.Dry;
                     plantState = PlantState.YoungPlant;
 
-                    bool result = Player.Player.Instance.AppendItemToInventory(PlantItem.Cactus);
+                    bool result = Player.Player.Instance.TryPlaceItemInHotbar(PlantItem.Cactus);
                     if (!result) {
                         GD.Print("couldnt add item to inventory, inventory already full. what to do now?");
                         break;

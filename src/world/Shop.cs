@@ -77,20 +77,21 @@ public partial class Shop : Node3D {
     }
 
     private void OnBuyButtonClick() {
-        if (_selectedGameItem is not GameItem gameItem) {
+        if (_selectedGameItem is null) {
             return;
         }
 
-        float price = gameItem.BuyPrice;
+        float price = _selectedGameItem.BuyPrice;
         if (Player.Player.Instance.CoinCount < price) {
             GD.Print("player doesnt have enough money to buy");
             return;
         }
+
         Player.Player.Instance.UpdateCoin(-price);
-        Player.Player.Instance.AppendItemToInventory(gameItem);
+        Player.Player.Instance.TryPlaceItemInHotbar(_selectedGameItem);
         UpdateUserOwnLabelOfSelectedItem();
 
-        if (gameItem is BuildItem buildItem && buildItem.Type == BuildItem.BuildItemType.GrowPlot && GameManager.Instance.CurrentObjective == GameManager.GameObjective.BuyFirstPlot) {
+        if (_selectedGameItem is BuildItem buildItem && buildItem.Type == BuildItem.BuildItemType.GrowPlot && GameManager.Instance.CurrentObjective == GameManager.GameObjective.BuyFirstPlot) {
             GameManager.Instance.UpdateObjective(GameManager.GameObjective.PlaceFirstPlot);
         }
 
@@ -100,11 +101,11 @@ public partial class Shop : Node3D {
     private void OnSellButtonClick() {
         if (_selectedGameItem is PlantItem plantItem) {
             GD.Print("Player trying to sell a plant");
-            (PlantItem, int)? itemFromInventory = Player.Player.Instance.GetPlantItemByType(plantItem.Type);
-            if (itemFromInventory is (PlantItem item, int index)) {
+            (PlantItem, int)? itemFromHotbar = Player.Player.Instance.GetPlantItemByType(plantItem.Type);
+            if (itemFromHotbar is (PlantItem item, int index)) {
                 float sellPrice = item.SellPrice;
                 Player.Player.Instance.UpdateCoin(sellPrice);
-                Player.Player.Instance.RemoveItemFromInventory(index);
+                Player.Player.Instance.RemoveItemFromHotbar(index);
 
                 UpdateUserOwnLabelOfSelectedItem();
 

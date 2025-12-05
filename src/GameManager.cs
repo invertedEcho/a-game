@@ -3,7 +3,7 @@ using Godot;
 namespace agame;
 
 public partial class GameManager : Node {
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
 
     public enum GameObjective {
         GrowFirstPlant,

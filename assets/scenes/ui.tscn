@@ -42,7 +42,7 @@ text = "0"
 layout_mode = 2
 text = "Current Objective: "
 
-[node name="HotbarInventory" type="HBoxContainer" parent="UiRoot"]
+[node name="Hotbar" type="HBoxContainer" parent="UiRoot"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 1
 anchors_preset = -1
@@ -57,52 +57,116 @@ grow_horizontal = 2
 grow_vertical = 0
 alignment = 1
 
-[node name="InventorySlot1" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="Slot1" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot2" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot1"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot2" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot3" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot2"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot3" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot4" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot3"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot4" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot5" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot4"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot5" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot6" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot5"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot6" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot7" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot6"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot7" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
 expand_mode = 1
 
-[node name="InventorySlot8" type="TextureRect" parent="UiRoot/HotbarInventory"]
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot7"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
+expand_mode = 1
+
+[node name="Slot8" type="TextureRect" parent="UiRoot/Hotbar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 texture = ExtResource("3_252mf")
+expand_mode = 1
+
+[node name="ItemPreview" type="TextureRect" parent="UiRoot/Hotbar/Slot8"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 30.0
+offset_bottom = 30.0
 expand_mode = 1
 
 [node name="InteractLabel" type="Label" parent="UiRoot"]
