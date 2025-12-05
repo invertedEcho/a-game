@@ -3,36 +3,60 @@ using Godot.Collections;
 using agame.Items;
 using static agame.World.GrowPlot;
 using static agame.Items.BuildItem;
+using agame.scripts.Player;
 
 namespace agame.Player;
 
 public partial class Player : CharacterBody3D {
-    private PlayerCamera _playerCamera;
-    private int _speed = 15;
-    private float _jumpVelocity = 10.0f;
+
+    // --- Player camera ---
+    private Camera3D _playerCamera;
+    private float _cameraJiggleAmmount = 0.3f;
+    private Vector3 _cameraInitalPos;
+    private Vector3 _cameraTargetPos;
+    private bool _wasOnFloor = false;
+
+    // --- Grapple gun --- (TODO: move somewhere else)
+    private Vector3? _grappleHit = null;
+    private float _grappleStren = 80.0f;
+    private Rope _rope = null;
+
+    // --- Movement related ---
+    private PlayerMovement _playerMovement;
 
     public static Player Instance { get; private set; }
 
-    public float CoinCount { get; private set; } = 0f;
-
     public const int HotbarSize = 8;
-    // maybe have a better data structure, we want fixed size of HotbarSize. for now we just ensure this at developer side that it wont be bigger than this
     private Array<GameItem> _hotbar = [];
+
+    public float CoinCount { get; private set; } = 0f;
 
     public int CurrentHotbarSlotSelected = 0;
 
     public override void _Ready() {
         Instance = this;
-        _playerCamera = (PlayerCamera)GetNode("PlayerCamera");
+        _playerMovement = new PlayerMovement();
+        _playerCamera = (Camera3D)GetNode("PlayerCamera");
+        _cameraTargetPos = _playerCamera.Position;
+        _cameraInitalPos = _playerCamera.Position;
         for (int i = 0; i < HotbarSize; i++) {
             _hotbar.Add(new GameItem { IsPlaceHolder = true });
         }
     }
 
     public override void _PhysicsProcess(double delta) {
-        ApplyGravity(delta);
-        HandleMovementInput();
+        _playerMovement.HandleMovement(IsOnFloor(), (float)delta);
+        Velocity = _playerMovement.finalVelocity;
         MoveAndSlide();
+
+        // Check for change
+        if (IsOnFloor() != _wasOnFloor) {
+            if (_wasOnFloor)
+                OnJumpStart();
+            else
+                OnJumpImpact();
+        }
+        _wasOnFloor = IsOnFloor();
     }
 
     public override void _Process(double delta) {
@@ -60,40 +84,41 @@ public partial class Player : CharacterBody3D {
         else if (Input.IsActionJustPressed("hotbar_8")) {
             UpdateCurrentHotbarSlotSelected(7);
         }
+
+        // --- Read input from player ---
+        _playerMovement.HandleInput(_playerCamera.Basis);
+
+        // --- Camera control ---
+        _playerCamera.Position = _playerCamera.Position.Lerp(_cameraTargetPos, (float)delta * 10f);
+
+        // --- Grapple gun ---
+        if (Input.IsActionJustPressed("mouse_click_left")) {
+            _grappleHit = GetCamRaycast(_playerCamera, 3000.0f);
+            if (_grappleHit != null) {
+                PackedScene ropeScene = GD.Load<PackedScene>("res://assets/scenes/rope.tscn");
+                _rope = ropeScene.Instantiate<Rope>();
+                GetTree().CurrentScene.AddChild(_rope);
+            }
+        }
+        if (Input.IsActionJustReleased("mouse_click_left")) {
+            _grappleHit = null;
+            if (_rope != null)
+                _rope.QueueFree();
+        }
+
+        if (_grappleHit.HasValue) {
+            _rope.startPoint = _playerCamera.GlobalPosition - new Vector3(0f, 0.3f, 0f);
+            _rope.endPoint = _grappleHit.Value;
+
+            Vector3 toGrapple = _grappleHit.Value - _playerCamera.GlobalPosition;
+            toGrapple = toGrapple.Normalized();
+            _playerMovement.finalVelocity += toGrapple * (float)delta * _grappleStren * _playerCamera.Position.DistanceTo(_grappleHit.Value) / 10.0f;
+        }
     }
 
     private void UpdateCurrentHotbarSlotSelected(int newHotbarSlotSelected) {
         CurrentHotbarSlotSelected = newHotbarSlotSelected;
         UiManager.Instance.UpdateSelectedHotbarSlot(newHotbarSlotSelected);
-    }
-
-    private void HandleMovementInput() {
-        if (_playerCamera.freeCamEnabled) return;
-        Vector3 localVelocity = new();
-
-        if (Input.IsActionPressed("move_left")) {
-            localVelocity.X -= 1.0f;
-        }
-        if (Input.IsActionPressed("move_right")) {
-            localVelocity.X += 1.0f;
-        }
-        if (Input.IsActionPressed("move_forward")) {
-            localVelocity.Z -= 1.0f;
-        }
-        if (Input.IsActionPressed("move_backwards")) {
-            localVelocity.Z += 1.0f;
-        }
-
-        localVelocity = localVelocity.Normalized();
-
-        Basis basis = _playerCamera.GlobalBasis;
-        Vector3 movement = basis.X * localVelocity.X + basis.Z * localVelocity.Z;
-
-        Velocity = new Vector3(movement.X * _speed, Velocity.Y, movement.Z * _speed);
-
-        if (IsOnFloor() && Input.IsActionJustPressed("jump")) {
-            Velocity = new Vector3(Velocity.X, _jumpVelocity, Velocity.Z);
-        }
     }
 
     private void ApplyGravity(double delta) {
@@ -182,5 +207,35 @@ public partial class Player : CharacterBody3D {
         }
         return count;
 
+    }
+
+    // --- Jumping callbacks ---
+    private void OnJumpImpact() {
+        DoCameraImpact();
+    }
+
+    private void OnJumpStart() {
+
+    }
+
+    private async void DoCameraImpact() {
+        _cameraTargetPos = _cameraInitalPos - new Vector3(0.0f, 0.5f, 0.0f);
+        await ToSignal(GetTree().CreateTimer(0.1f), SceneTreeTimer.SignalName.Timeout);
+        _cameraTargetPos = _cameraInitalPos;
+    }
+
+    private Vector3? GetCamRaycast(Camera3D camera, float maxDistance) {
+        PhysicsRayQueryParameters3D parameters = new PhysicsRayQueryParameters3D {
+            From = camera.GlobalPosition,
+            To = camera.GlobalPosition + -camera.GlobalTransform.Basis.Z * maxDistance,
+            CollideWithAreas = true,
+            CollideWithBodies = true
+        };
+        parameters.Exclude = new Godot.Collections.Array<Rid> { camera.GetCameraRid() };
+        var spaceState = GetWorld3D().DirectSpaceState;
+        Godot.Collections.Dictionary result = spaceState.IntersectRay(parameters);
+        if (result.Count > 0)
+            return (Vector3)result["position"];
+        return null;
     }
 }

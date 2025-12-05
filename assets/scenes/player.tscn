@@ -1,11 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://ck3gn5l4wlsnt"]
+[gd_scene load_steps=7 format=3 uid="uid://ck3gn5l4wlsnt"]
 
 [ext_resource type="Script" uid="uid://cuf1sqekmv2h3" path="res://src/player/Player.cs" id="1_s027a"]
 [ext_resource type="Script" uid="uid://4vrom1kigyy2" path="res://src/player/PlayerCamera.cs" id="2_14505"]
+[ext_resource type="Script" uid="uid://c8jfdte50y1pj" path="res://src/items/ItemHolder.cs" id="3_14505"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0f027"]
 radius = 0.7
 height = 3.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_14505"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_0f027"]
 
@@ -20,6 +23,14 @@ shape = SubResource("CapsuleShape3D_0f027")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.632436, 0)
 current = true
 script = ExtResource("2_14505")
+
+[node name="ItemHolder" type="Node3D" parent="PlayerCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4786781, 0, -1.5563546)
+script = ExtResource("3_14505")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerCamera/ItemHolder"]
+transform = Transform3D(0.335, 0, 0, 0, 0.335, 0, 0, 0, 0.335, 0, 0, 0)
+mesh = SubResource("BoxMesh_14505")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_0f027")

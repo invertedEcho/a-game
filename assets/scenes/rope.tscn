@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjlvt3w3xaggn"]
+
+[ext_resource type="Script" uid="uid://4eb7maoj2n70" path="res://src/Rope/Rope.cs" id="1_osk7e"]
+
+[sub_resource type="ImmediateMesh" id="ImmediateMesh_dl1nf"]
+
+[node name="Rope" type="Node3D"]
+script = ExtResource("1_osk7e")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("ImmediateMesh_dl1nf")

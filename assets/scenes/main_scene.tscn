@@ -1,22 +1,27 @@
-[gd_scene load_steps=10 format=3 uid="uid://6ye6v48133nk"]
+[gd_scene load_steps=11 format=3 uid="uid://6ye6v48133nk"]
 
 [ext_resource type="Script" uid="uid://dial8v0hrborf" path="res://src/world/World.cs" id="1_u44wh"]
+[ext_resource type="Texture2D" uid="uid://bmy0id0n1717r" path="res://assets/textures/skybox/Sky_Anime_03_Day_a.png" id="2_4v045"]
 [ext_resource type="PackedScene" uid="uid://ck3gn5l4wlsnt" path="res://assets/scenes/player.tscn" id="2_vo808"]
 [ext_resource type="PackedScene" uid="uid://bxtk8d22pmu6w" path="res://assets/scenes/ui.tscn" id="3_4v045"]
 [ext_resource type="PackedScene" uid="uid://c23501e3bb6dg" path="res://assets/scenes/shop.tscn" id="8_0ft0v"]
 [ext_resource type="PackedScene" uid="uid://dgs4yhglem7hx" path="res://assets/scenes/grow_plot.tscn" id="9_702vk"]
 [ext_resource type="PackedScene" uid="uid://lwuldjtnyasv" path="res://assets/scenes/terrain.tscn" id="9_yecn6"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_702vk"]
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_0ft0v"]
+panorama = ExtResource("2_4v045")
 
 [sub_resource type="Sky" id="Sky_yecn6"]
-sky_material = SubResource("ProceduralSkyMaterial_702vk")
+sky_material = SubResource("PanoramaSkyMaterial_0ft0v")
 
 [sub_resource type="Environment" id="Environment_supws"]
 background_mode = 2
 sky = SubResource("Sky_yecn6")
 ambient_light_sky_contribution = 0.85
 tonemap_exposure = 0.65
+ssao_enabled = true
+ssao_radius = 3.24
+ssao_intensity = 3.37
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_u44wh")
@@ -29,6 +34,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3096175, 1.6704912, 5.62416
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.21694095, -0.92885137, -0.30028638, 0.12379606, -0.27895105, 0.9522925, -0.9683032, -0.24376553, 0.054472238, 0, 21.900164, 0)
+shadow_enabled = true
 
 [node name="CanvasLayer" parent="." instance=ExtResource("3_4v045")]
 
